@@ -152,7 +152,7 @@ FULFIL   ⑨ Integrity checks passed       ULIDs valid, client_reference_id = or
 
 
 ## Sample card numbers
-
+```
 Mastercard success	5555 5555 5555 4444
 Amex success (4-digit CVC)	3782 822463 10005
 Visa debit success	4000 0566 5566 5556
@@ -161,3 +161,4 @@ Generic decline	4000 0000 0000 0002
 Insufficient funds	4000 0000 0000 9995
 Incorrect CVC decline	4000 0000 0000 0127
 Expired card decline	4000 0000 0000 00
+```
