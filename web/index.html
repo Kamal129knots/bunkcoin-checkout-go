@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · 129Knots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="theme.css">   <!-- brand tokens (from the Figma) -->
+  <link rel="stylesheet" href="style.css">   <!-- layout + components -->
+  <script src="api.js" defer></script>       <!-- fetch helper, formatting, error banner -->
+  <script src="shell.js" defer></script>     <!-- session, Bunk Coin balance, purchase history -->
+  <script src="dashboard.js" defer></script> <!-- this page -->
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────────────────────── -->
+<header class="topbar">
+  <div class="wrap">
+    <button class="icon-sq" type="button" aria-label="Menu">☰</button>
+    <a class="logo" href="/" style="color:inherit;text-decoration:none"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>129<br>KNOTS</span></a>
+    <div class="topbar-right">
+      <span class="badge" id="mode-badge" hidden>TEST MODE</span>
+      <button class="icon-sq optional" type="button" aria-label="Support">🎧</button>
+      <button class="icon-sq optional" type="button" aria-label="Notifications">🔔</button>
+      <button class="icon-sq" type="button" aria-label="Profile">👤</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Page header: title + Bunk Coin stats ──────────────────────────────── -->
+<section class="page-top">
+  <div class="wrap page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="date" id="today"></p>
+    </div>
+      <div class="coin-card">
+        <div class="coin-top">
+          <div class="coin-title">Bunk Coin <span class="coin-icon" aria-hidden="true">B</span></div>
+          <a class="coin-add" href="/topup.html" aria-label="Top up Bunk Coin">+</a>
+        </div>
+        <div class="coin-stats">
+          <div><small>Available</small><strong id="coin-available">—</strong></div>
+          <span class="sep"></span>
+          <!-- PRODUCTION: "utilised" comes from the platform's usage records -->
+          <div><small>Utilised coins</small><strong id="coin-utilised">—</strong></div>
+        </div>
+        <div class="coin-links">
+          <a href="/topup.html">Top up</a>
+          <a href="/topup.html#purchases">Purchase history →</a>
+        </div>
+      </div>
+  </div>
+</section>
+
+<main class="body">
+  <div class="wrap">
+    <div id="banner" class="banner" role="alert" hidden>
+      <div class="banner-body"><strong id="banner-title"></strong><p id="banner-msg"></p><small id="banner-ref"></small></div>
+      <div class="banner-actions">
+        <button type="button" class="btn ghost" id="banner-retry" hidden>Try again</button>
+        <button type="button" class="icon-btn" id="banner-close" aria-label="Dismiss">×</button>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

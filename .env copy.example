@@ -1,0 +1,34 @@
+# ── Stripe ────────────────────────────────────────────────────────────────────
+# Keys: https://dashboard.stripe.com/test/apikeys (same sandbox you ran `stripe login` against)
+STRIPE_SECRET_KEY=sk_test_replace_me
+STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
+# Printed by `make webhooks` (stripe listen). In production: the endpoint's signing secret.
+STRIPE_WEBHOOK_SECRET=whsec_replace_me
+
+# ── Server ───────────────────────────────────────────────────────────────────
+PORT=4242
+PUBLIC_BASE_URL=http://localhost:4242
+
+# ── Who is buying (identity comes from the session; ULIDs only) ──────────────
+# dev → every browser gets a signed session for DEV_USER_ID / DEV_ORG_ID (refused with live keys)
+# jwt → verify the 129Knots login token (Authorization: Bearer … or cookie "bkc_token")
+#       claims: sub = user ULID, org_id = organisation ULID, exp
+AUTH_MODE=dev
+# Required for jwt (≥32 chars, same HS256 secret your auth service signs with). Optional for dev.
+AUTH_SECRET=
+# Dev session identity (ULIDs). Change DEV_ORG_ID to act as a different organisation.
+DEV_USER_ID=01JA2Y7K3V9QF6M8N4P5R0S1TW
+DEV_ORG_ID=01JA2Y6H8D4C2B0Z9X7W5V3T1R
+
+# ── Pricing (minor units: 100 = $1.00 per BunkCoin) ──────────────────────────
+BUNKCOIN_CURRENCY=usd
+BUNKCOIN_UNIT_AMOUNT=100
+BUNKCOIN_MIN_QTY=10
+BUNKCOIN_MAX_QTY=100000
+CHECKOUT_SESSION_TTL_MINUTES=30
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+# pretty = readable coloured lines (default with test keys) · json = one JSON object per line (production)
+LOG_FORMAT=pretty
+# debug also shows routine page requests (GET /api/me, static files)
+LOG_LEVEL=info

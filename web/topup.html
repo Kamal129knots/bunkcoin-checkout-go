@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Top up Bunk Coin · 129Knots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- Stripe.js must load from js.stripe.com (PCI). "endive" pairs with API 2026-09-30.endive. -->
+  <script src="https://js.stripe.com/endive/stripe.js" async id="stripe-js"></script>
+  <script src="api.js" defer></script>     <!-- fetch helper, formatting, error banner -->
+  <script src="shell.js" defer></script>   <!-- session, Bunk Coin balance, purchase history -->
+  <script src="topup.js" defer></script>   <!-- this page: choose amount → Stripe checkout -->
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <button class="icon-sq" type="button" aria-label="Menu">☰</button>
+    <a class="logo" href="/" style="color:inherit;text-decoration:none"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>129<br>KNOTS</span></a>
+    <div class="topbar-right">
+      <span class="badge" id="mode-badge" hidden>TEST MODE</span>
+      <button class="icon-sq optional" type="button" aria-label="Support">🎧</button>
+      <button class="icon-sq optional" type="button" aria-label="Notifications">🔔</button>
+      <button class="icon-sq" type="button" aria-label="Profile">👤</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Page header: title + Bunk Coin stats ──────────────────────────────── -->
+<section class="page-top">
+  <div class="wrap page-head">
+    <div>
+      <a class="crumb" href="/">← Dashboard</a>
+      <h1>Top up Bunk Coin</h1>
+      <p id="rate-line"></p>
+    </div>
+      <div class="coin-card">
+        <div class="coin-top">
+          <div class="coin-title">Bunk Coin <span class="coin-icon" aria-hidden="true">B</span></div>
+          <button type="button" class="coin-add" id="coin-add" aria-label="Choose an amount">+</button>
+        </div>
+        <div class="coin-stats">
+          <div><small>Available</small><strong id="coin-available">—</strong></div>
+          <span class="sep"></span>
+          <!-- PRODUCTION: "utilised" comes from the platform's usage records -->
+          <div><small>Utilised coins</small><strong id="coin-utilised">—</strong></div>
+        </div>
+      </div>
+  </div>
+</section>
+
+<main class="body">
+  <div class="wrap">
+    <div id="banner" class="banner" role="alert" hidden>
+      <div class="banner-body"><strong id="banner-title"></strong><p id="banner-msg"></p><small id="banner-ref"></small></div>
+      <div class="banner-actions">
+        <button type="button" class="btn ghost" id="banner-retry" hidden>Try again</button>
+        <button type="button" class="icon-btn" id="banner-close" aria-label="Dismiss">×</button>
+      </div>
+    </div>
+
+    <div class="two-col" id="app-area" hidden>
+      <!-- ── Top up ──────────────────────────────────────────────────────── -->
+      <section class="panel topup" id="topup">
+        <div class="panel-bar"><span class="label">Choose amount</span><p>Secure payment by Stripe</p></div>
+
+        <!-- Step 1: choose amount -->
+        <div class="panel-body" id="step-select">
+          <div id="loading" class="skeleton-grid" aria-label="Loading packages">
+            <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+          </div>
+          <form id="buy-form" novalidate hidden>
+            <fieldset class="packages" id="packages">
+              <legend class="sr-only">Choose a package</legend>
+              <!-- package cards are inserted here by topup.js → renderPackages() -->
+            </fieldset>
+
+            <label class="option custom">
+              <input type="radio" name="choice" value="custom" id="choice-custom">
+              <span class="option-body">
+                <span class="option-head">Custom amount</span>
+                <span class="custom-row">
+                  <input type="text" inputmode="numeric" autocomplete="off" id="custom-qty" placeholder="e.g. 2500"
+                         aria-describedby="custom-hint custom-error">
+                  <span class="unit">coins</span>
+                </span>
+                <small class="hint" id="custom-hint"></small>
+                <small class="field-error" id="custom-error" role="alert"></small>
+              </span>
+            </label>
+
+            <div class="summary" aria-live="polite">
+              <div><span class="summary-label">You'll get</span><span class="summary-qty" id="summary-qty">—</span></div>
+              <div class="summary-total"><span class="summary-label">Total</span><span id="summary-total">—</span></div>
+            </div>
+
+            <button type="submit" class="btn primary block" id="continue" disabled>
+              <span class="btn-label">Continue to payment</span><span class="spinner" aria-hidden="true"></span>
+            </button>
+            <p class="fineprint">Card details go directly to Stripe and never touch 129Knots servers.</p>
+          </form>
+        </div>
+
+        <!-- Step 2: Stripe's embedded checkout -->
+        <div class="panel-body" id="step-pay" hidden>
+          <div class="pay-head">
+            <button type="button" class="btn ghost" id="back">← Change amount</button>
+            <div class="pay-summary" id="pay-summary"></div>
+          </div>
+          <div id="checkout" class="checkout-frame"><!-- Stripe mounts its iframe here --></div>
+        </div>
+      </section>
+
+      <!-- ── Purchase history ────────────────────────────────────────────── -->
+      <section class="panel" id="purchases">
+        <div class="panel-bar"><span class="label">Purchase history</span><p>Last 10</p></div>
+        <div class="panel-body">
+          <table class="table">
+            <thead><tr><th>Purchase</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="orders"></tbody>
+          </table>
+          <p class="empty" id="orders-empty">No purchases yet.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+</body>
+</html>
